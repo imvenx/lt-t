@@ -107,6 +107,34 @@
             color: #5a6c7d;
             border-radius: 8px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tool-call:hover {
+            background: linear-gradient(to right, #e9ecef, #dee2e6);
+        }
+        
+        .tool-results {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .tool-results.expanded {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .tool-results-content {
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #495057;
         }
 
         .message-group {
@@ -422,10 +450,21 @@
         }
 
         function formatMessageWithTools(text) {
-            // Replace tool markers with styled spans
-            let formatted = text
-                .replace(/\[TOOL_START\](.*?)\[TOOL_START\]/g, '<span class="tool-call">🔍 $1</span>')
-                .replace(/\[TOOL_END\](.*?)\[TOOL_END\]/g, ' <span class="tool-call">✅ $1</span>');
+            // Extract tool results between START and END markers
+            const toolPattern = /\[TOOL_START\](.*?)\[TOOL_START\]\n?(.*?)\n?\[TOOL_END\](.*?)\[TOOL_END\]/gs;
+            let formatted = text;
+            let toolCounter = 0;
+            
+            formatted = formatted.replace(toolPattern, (match, startText, toolContent, endText) => {
+                const toolId = `tool-${Date.now()}-${toolCounter++}`;
+                const cleanContent = toolContent.trim();
+                
+                return `<span class="tool-call" onclick="toggleToolResults('${toolId}')">🔍 ${startText.trim()} (click to expand)</span>
+                        <div class="tool-results" id="${toolId}">
+                            <div class="tool-results-content">${cleanContent.replace(/\n/g, '<br>')}</div>
+                        </div>
+                        <span class="tool-call">✅ ${endText.trim()}</span>`;
+            });
 
             // Convert markdown-style bold to HTML
             formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -434,6 +473,13 @@
             formatted = formatted.replace(/\n{3,}/g, '<br><br>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
 
             return formatted;
+        }
+        
+        function toggleToolResults(toolId) {
+            const element = document.getElementById(toolId);
+            if (element) {
+                element.classList.toggle('expanded');
+            }
         }
     </script>
 </body>

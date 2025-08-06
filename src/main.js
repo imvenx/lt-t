@@ -5,7 +5,6 @@ const { ChatOllama, OllamaEmbeddings } = require('@langchain/ollama');
 const { createReactAgent } = require("@langchain/langgraph/prebuilt");
 const { MemorySaver } = require("@langchain/langgraph");
 const { RunnableConfig } = require("@langchain/langgraph");
-const { retrieve } = require('./tools');
 const { ChatAnthropic } = require('@langchain/anthropic');
 const { MemoryVectorStore } = require('langchain/vectorstores/memory');
 const { PDFLoader } = require('@langchain/community/document_loaders/fs/pdf');
@@ -41,18 +40,18 @@ app.post('/chat', async (req, res) => {
         );
 
         let inToolCall = false;
-        
+
         for await (const event of stream) {
             if (event.event === 'on_tool_start') {
-                res.write('[TOOL_START]Searching CVs...[TOOL_START]');
+                res.write('\n[TOOL_START]Searching CVs...[TOOL_START]\n');
                 inToolCall = true;
             }
-            
+
             if (event.event === 'on_tool_end') {
-                res.write('[TOOL_END]Search complete[TOOL_END]');
+                res.write('\n[TOOL_END]Search complete[TOOL_END]\n');
                 inToolCall = false;
             }
-            
+
             if (event.event === 'on_chat_model_stream' && !inToolCall) {
                 const text = event.data?.chunk?.content?.[0]?.text;
                 if (text) {

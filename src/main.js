@@ -48,6 +48,10 @@ app.post('/chat', async (req, res) => {
             }
 
             if (event.event === 'on_tool_end') {
+                const toolResult = event.data?.output?.content || event.data?.output;
+                if (toolResult && typeof toolResult === 'string') {
+                    res.write(toolResult + '\n');
+                }
                 res.write('\n[TOOL_END]Search complete[TOOL_END]\n');
                 inToolCall = false;
             }

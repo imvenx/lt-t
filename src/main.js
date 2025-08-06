@@ -1,11 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const { ChatOllama } = require('@langchain/ollama');
+const path = require('path');
+const { ChatOllama, OllamaEmbeddings } = require('@langchain/ollama');
 const { createReactAgent } = require("@langchain/langgraph/prebuilt");
 const { MemorySaver } = require("@langchain/langgraph");
 const { RunnableConfig } = require("@langchain/langgraph");
 const { retrieve } = require('./tools');
 const { ChatAnthropic } = require('@langchain/anthropic');
+const { MemoryVectorStore } = require('langchain/vectorstores/memory');
+const { PDFLoader } = require('@langchain/community/document_loaders/fs/pdf');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const { RecursiveCharacterTextSplitter } = require("@langchain/textsplitters");
+const { tool } = require("@langchain/core/tools");
+const { z } = require("zod");
+
 require('dotenv').config();
 
 const app = express();
@@ -23,32 +32,118 @@ const llm = new ChatAnthropic({
     model: 'claude-3-5-haiku-20241022',
     temperature: 0.1
 });
+
+const embeddings = new OllamaEmbeddings({ baseUrl: 'http://localhost:11434', model: 'nomic-embed-text', });
+const vectorStore = new MemoryVectorStore(embeddings);
+
+
+const retrieveTool = tool(
+    async ({ query }) => {
+        const retrievedDocs = await vectorStore.similaritySearch(query, 4);
+
+        if (retrievedDocs.length === 0) {
+            return "No relevant CVs found for your query.";
+        }
+
+        const candidateInfo = {};
+        retrievedDocs.forEach(doc => {
+            const name = doc.metadata.candidateName || doc.metadata.filename;
+            if (!candidateInfo[name]) {
+                candidateInfo[name] = [];
+            }
+            candidateInfo[name].push(doc.pageContent);
+        });
+
+        let response = "Here's what I found in the CVs:\n\n";
+        for (const [candidate, contents] of Object.entries(candidateInfo)) {
+            response += `**${candidate}:**\n`;
+            response += contents.join('\n') + '\n\n';
+        }
+
+        return response;
+    },
+    {
+        name: "search_cvs",
+        description: "Search through CV database for candidates with specific skills, experience, or qualifications",
+        schema: z.object({
+            query: z.string().describe("The search query to find relevant CV information"),
+        }),
+    }
+);
+
 const checkpointer = new MemorySaver();
-const agent = createReactAgent({ llm: llm, tools: [], prompt: 'Task: aid the user', checkpointer });
+const agent = createReactAgent({ llm: llm, tools: [retrieveTool], prompt: 'Task: aid the user', checkpointer });
 const config = { configurable: { thread_id: '1' } };
 
+async function loadCVs(cvsDirectory) {
+    const pdfFiles = fs.readdirSync(cvsDirectory).map(file => path.join(cvsDirectory, file));
+    console.log(`Loading ${pdfFiles.length} CV files...`);
+    const allDocuments = [];
+
+    for (const pdfPath of pdfFiles) {
+        console.log(`Processing: ${path.basename(pdfPath)}`);
+
+        const loader = new PDFLoader(pdfPath);
+        const docs = await loader.load();
+
+        docs.forEach(doc => {
+            doc.metadata = {
+                ...doc.metadata,
+                filename: path.basename(pdfPath),
+                candidateName: extractCandidateName(path.basename(pdfPath)),
+                source: pdfPath,
+                id: uuidv4(),
+            };
+        });
+
+        allDocuments.push(...docs);
+    }
+
+    const textSplitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 2000,
+        chunkOverlap: 200,
+    });
+
+    const allSplits = await textSplitter.splitDocuments(allDocuments);
+    await vectorStore.addDocuments(allSplits);
+
+    console.log(`CVs loaded - ${allSplits.length} chunks created from ${pdfFiles.length} files`);
+    return allSplits.length;
+}
+
+function extractCandidateName(filename) {
+    return filename.replace('_cv.pdf', '').split('_').join(' ');
+}
+
 async function chat() {
-    const stream1 = agent.streamEvents({ messages: ['3'] }, { ...config, version: 'v2' });
+    const stream1 = agent.streamEvents({ messages: ['who knows python?'] }, { ...config, version: 'v2' });
     console.log('First response:');
     for await (const event of stream1) {
         if (event.event === 'on_chat_model_stream') {
-            const chunk = event.data?.chunk?.content;
-            if (chunk) {
-                process.stdout.write(chunk);
-            }
+            process.stdout.write(event.data?.chunk?.content?.[0]?.text ?? '');
+        }
+
+        if (event.event === 'on_tool_start') {
+            console.log(event)
+        }
+        if (event.event === 'on_tool_end') {
+            console.log(event)
         }
     }
-    const stream2 = agent.streamEvents({ messages: ['+ 5?'] }, { ...config, version: 'v2' });
-    console.log('Second response:');
-    for await (const event of stream2) {
-        if (event.event === 'on_chat_model_stream') {
-            const chunk = event.data?.chunk?.content;
-            if (chunk) {
-                process.stdout.write(chunk);
-            }
-        }
-    }
+    // console.log(stream1)
+
+    // const stream2 = agent.streamEvents({ messages: ['+ 5?'] }, { ...config, version: 'v2' });
+    // console.log('Second response:');
+    // for await (const event of stream2) {
+    //     if (event.event === 'on_chat_model_stream') {
+    //         process.stdout.write(event.data?.chunk?.content?.[0]?.text ?? '');
+    //     }
+    // }
+
+    // const history = await checkpointer.get(config.configurable);
+    // console.log('\n\n[CHAT HISTORY]:', JSON.stringify(history?.channel_values?.messages || [], null, 2));
+
 }
 
-
+loadCVs('./cvs')
 chat()

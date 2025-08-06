@@ -12,9 +12,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@langchain/anthropic": "^0.3.26",
     "@langchain/langgraph": "^0.4.3",
     "@langchain/ollama": "^0.2.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0"
   }
 }

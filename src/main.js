@@ -28,10 +28,27 @@ const agent = createReactAgent({ llm: llm, tools: [], prompt: 'Task: aid the use
 const config = { configurable: { thread_id: '1' } };
 
 async function chat() {
-    const answer = await agent.invoke({ messages: ['3'] }, config)
-    console.log(answer)
-    const answer2 = await agent.invoke({ messages: ['+ 5?'] }, config)
-    console.log(answer2)
+    const stream1 = agent.streamEvents({ messages: ['3'] }, { ...config, version: 'v2' });
+    console.log('First response:');
+    for await (const event of stream1) {
+        if (event.event === 'on_chat_model_stream') {
+            const chunk = event.data?.chunk?.content;
+            if (chunk) {
+                process.stdout.write(chunk);
+            }
+        }
+    }
+    const stream2 = agent.streamEvents({ messages: ['+ 5?'] }, { ...config, version: 'v2' });
+    console.log('Second response:');
+    for await (const event of stream2) {
+        if (event.event === 'on_chat_model_stream') {
+            const chunk = event.data?.chunk?.content;
+            if (chunk) {
+                process.stdout.write(chunk);
+            }
+        }
+    }
 }
+
 
 chat()

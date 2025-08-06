@@ -22,9 +22,41 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('frontend'));
-app.listen(PORT, () => console.log(`App started at http://localhost:${PORT}`))
-app.get('/', (req, res) => { res.sendFile(__dirname + '/frontend/index.html'); });
+app.use(express.static(path.join(__dirname, 'frontend')));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+app.post('/chat', async (req, res) => {
+    const { message } = req.body;
+    const threadId = req.headers['x-thread-id'] || 'default-thread';
+
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
+    try {
+        const stream = await agent.streamEvents(
+            { messages: [message] },
+            { configurable: { thread_id: threadId }, version: 'v2' }
+        );
+
+        for await (const event of stream) {
+            if (event.event === 'on_chat_model_stream') {
+                const text = event.data?.chunk?.content?.[0]?.text;
+                if (text) {
+                    res.write(text);
+                }
+            }
+        }
+
+        res.end();
+    } catch (error) {
+        console.error('Chat error:', error);
+        res.status(500).end('Error processing request');
+    }
+});
+
+app.listen(PORT, () => console.log(`App started at http://localhost:${PORT}`));
 
 // const llm = new ChatOllama({ baseUrl: 'http://localhost:11434', model: 'gpt-oss:20b', temperature: 0.1 });
 const llm = new ChatAnthropic({
@@ -146,4 +178,4 @@ async function chat() {
 }
 
 loadCVs('./cvs')
-chat()
+// chat() // Commented out - now using web interface

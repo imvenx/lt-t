@@ -40,8 +40,20 @@ app.post('/chat', async (req, res) => {
             { configurable: { thread_id: threadId }, version: 'v2' }
         );
 
+        let inToolCall = false;
+        
         for await (const event of stream) {
-            if (event.event === 'on_chat_model_stream') {
+            if (event.event === 'on_tool_start') {
+                res.write('[TOOL_START]Searching CVs...[TOOL_START]');
+                inToolCall = true;
+            }
+            
+            if (event.event === 'on_tool_end') {
+                res.write('[TOOL_END]Search complete[TOOL_END]');
+                inToolCall = false;
+            }
+            
+            if (event.event === 'on_chat_model_stream' && !inToolCall) {
                 const text = event.data?.chunk?.content?.[0]?.text;
                 if (text) {
                     res.write(text);

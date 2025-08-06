@@ -12,111 +12,314 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden;
         }
 
         .chat-container {
-            width: 600px;
-            height: 600px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100vw;
+            height: 100vh;
+            background: #f7f8fa;
             display: flex;
             flex-direction: column;
         }
 
         .chat-header {
-            padding: 20px;
-            background: #2c3e50;
+            padding: 20px 30px;
+            background: linear-gradient(90deg, #6b7c8a 0%, #8e9eab 100%);
             color: white;
-            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chat-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            opacity: 0.9;
         }
 
         .chat-messages {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
 
         .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            border-radius: 18px;
+            max-width: 70%;
+            line-height: 1.6;
+            font-size: 15px;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .user-message {
-            background: #3498db;
+            background: linear-gradient(135deg, #6b7c8a 0%, #8e9eab 100%);
             color: white;
             margin-left: auto;
+            border-bottom-right-radius: 6px;
         }
 
         .assistant-message {
-            background: #ecf0f1;
-            color: #2c3e50;
+            background: white;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 6px;
+        }
+        
+        .tool-call {
+            display: inline-block;
+            background: linear-gradient(to right, #f1f3f5, #e9ecef);
+            border-left: 4px solid #8e9eab;
+            padding: 8px 14px;
+            margin: 8px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            color: #5a6c7d;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        
+        .message-group {
+            margin-bottom: 30px;
+        }
+        
+        .suggestions-container {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .suggestions-title {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .suggestion-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .suggestion {
+            padding: 8px 16px;
+            background: #f7f8fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #5a6c7d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .suggestion:hover {
+            background: linear-gradient(135deg, #6b7c8a 0%, #8e9eab 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 124, 138, 0.2);
+        }
+        
+        .suggestion span {
+            margin-right: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 30px;
         }
 
         .chat-input-container {
-            padding: 20px;
-            border-top: 1px solid #ecf0f1;
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
         }
 
         #messageInput {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        #messageInput:focus {
+            outline: none;
+            border-color: #8e9eab;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(142, 158, 171, 0.1);
         }
 
         #sendButton {
-            padding: 10px 20px;
-            background: #3498db;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #6b7c8a 0%, #8e9eab 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(107, 124, 138, 0.3);
         }
 
         #sendButton:hover {
-            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(107, 124, 138, 0.4);
         }
 
         #sendButton:disabled {
-            background: #95a5a6;
+            background: linear-gradient(135deg, #b8c1cc 0%, #9ca6b1 100%);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .loading {
             display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #3498db;
+            width: 8px;
+            height: 8px;
+            background: #8e9eab;
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            margin: 0 2px;
+            animation: pulse 1.4s infinite;
+        }
+        
+        .loading:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading:nth-child(3) {
+            animation-delay: 0.4s;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 60%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            30% { 
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h2>CV Assistant</h2>
-            <p style="font-size: 12px; margin-top: 5px;">Ask about candidates' skills and experience</p>
+            <h2>🎯 CV Assistant</h2>
+            <p style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Ask about candidates' skills, experience, and qualifications</p>
         </div>
         <div class="chat-messages" id="chatMessages">
+            <div class="empty-state" id="emptyState">
+                <h3>Welcome to CV Assistant</h3>
+                <p>Ask me about candidates' skills, experience, and qualifications</p>
+                <div class="suggestions-title">Try these questions to get started:</div>
+                <div class="suggestion-pills">
+                    <button class="suggestion" onclick="useSuggestion('Who has experience with Python?')">
+                        <span>🐍</span> Who has experience with Python?
+                    </button>
+                    <button class="suggestion" onclick="useSuggestion('Which candidates know React?')">
+                        <span>⚛️</span> Which candidates know React?
+                    </button>
+                    <button class="suggestion" onclick="useSuggestion('Find someone with machine learning skills')">
+                        <span>🤖</span> Find someone with ML skills
+                    </button>
+                    <button class="suggestion" onclick="useSuggestion('Who graduated from UPC?')">
+                        <span>🎓</span> Who graduated from UPC?
+                    </button>
+                    <button class="suggestion" onclick="useSuggestion('List candidates with 5+ years experience')">
+                        <span>💼</span> 5+ years experience
+                    </button>
+                    <button class="suggestion" onclick="useSuggestion('Who has AWS certification?')">
+                        <span>☁️</span> AWS certified candidates
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="suggestions-container" id="suggestionsContainer">
+            <div class="suggestions-title">Suggested questions:</div>
+            <div class="suggestion-pills">
+                <button class="suggestion" onclick="useSuggestion('Who knows JavaScript?')">
+                    <span>📜</span> JavaScript developers
+                </button>
+                <button class="suggestion" onclick="useSuggestion('Find DevOps engineers')">
+                    <span>🔧</span> DevOps engineers
+                </button>
+                <button class="suggestion" onclick="useSuggestion('Who has leadership experience?')">
+                    <span>👥</span> Leadership experience
+                </button>
+                <button class="suggestion" onclick="useSuggestion('Show me data scientists')">
+                    <span>📊</span> Data scientists
+                </button>
+            </div>
         </div>
         <div class="chat-input-container">
             <input 
@@ -130,6 +333,13 @@
     </div>
 
     <script>
+        function useSuggestion(text) {
+            const input = document.getElementById('messageInput');
+            input.value = text;
+            input.focus();
+            sendMessage();
+        }
+        
         async function sendMessage() {
             const input = document.getElementById('messageInput');
             const sendButton = document.getElementById('sendButton');
@@ -137,13 +347,19 @@
             
             if (!message) return;
             
+            // Hide empty state on first message
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+            
             addMessage(message, 'user');
             input.value = '';
             input.disabled = true;
             sendButton.disabled = true;
             
             const loadingId = 'loading-' + Date.now();
-            addMessage('<span class="loading"></span>', 'assistant', loadingId);
+            addMessage('<span class="loading"></span><span class="loading"></span><span class="loading"></span>', 'assistant', loadingId);
             
             try {
                 const response = await fetch('/chat', {
@@ -170,7 +386,10 @@
                     
                     const chunk = decoder.decode(value);
                     assistantMessage += chunk;
-                    document.getElementById(messageId).innerHTML = assistantMessage;
+                    
+                    // Parse and format the message with tool calls
+                    const formatted = formatMessageWithTools(assistantMessage);
+                    document.getElementById(messageId).innerHTML = formatted;
                     scrollToBottom();
                 }
             } catch (error) {
@@ -196,6 +415,21 @@
         function scrollToBottom() {
             const messagesDiv = document.getElementById('chatMessages');
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function formatMessageWithTools(text) {
+            // Replace tool markers with styled spans
+            let formatted = text
+                .replace(/\[TOOL_START\](.*?)\[TOOL_START\]/g, '<span class="tool-call">🔍 $1</span>')
+                .replace(/\[TOOL_END\](.*?)\[TOOL_END\]/g, ' <span class="tool-call">✅ $1</span>');
+            
+            // Convert markdown-style bold to HTML
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Preserve line breaks but not excessive ones
+            formatted = formatted.replace(/\n{3,}/g, '<br><br>').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+            
+            return formatted;
         }
     </script>
 </body>

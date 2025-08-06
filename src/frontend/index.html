@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
             height: 100vh;
             overflow: hidden;
         }
@@ -22,26 +22,28 @@
         .chat-container {
             width: 100vw;
             height: 100vh;
-            background: #f7f8fa;
+            background: #1a202c;
             display: flex;
             flex-direction: column;
         }
 
         .chat-header {
             padding: 20px 30px;
-            background: linear-gradient(90deg, #6b7c8a 0%, #8e9eab 100%);
-            color: white;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(90deg, #2d3748 0%, #4a5568 100%);
+            color: #e2e8f0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
         }
 
         .chat-header h2 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 5px;
+            color: #f7fafc;
         }
 
         .chat-header p {
             opacity: 0.9;
+            color: #cbd5e0;
         }
 
         .chat-messages {
@@ -51,6 +53,7 @@
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
+            background: #1a202c;
         }
 
         .chat-messages::-webkit-scrollbar {
@@ -58,17 +61,17 @@
         }
 
         .chat-messages::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #2d3748;
             border-radius: 10px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #4a5568;
             border-radius: 10px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #68d391;
         }
 
         .message {
@@ -83,58 +86,60 @@
         }
 
         .user-message {
-            background: linear-gradient(135deg, #6b7c8a 0%, #8e9eab 100%);
-            color: white;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: #f7fafc;
             margin-left: auto;
             border-bottom-right-radius: 6px;
+            border: 1px solid #4a5568;
         }
 
         .assistant-message {
-            background: white;
-            color: #4a5568;
-            border: 1px solid #e2e8f0;
+            background: #2d3748;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
             border-bottom-left-radius: 6px;
         }
 
         .tool-call {
             display: inline-block;
-            background: linear-gradient(to right, #f1f3f5, #e9ecef);
-            border-left: 4px solid #8e9eab;
+            background: linear-gradient(to right, #4a5568, #2d3748);
+            border-left: 4px solid #68d391;
             padding: 8px 14px;
             margin: 8px 0;
             font-family: 'Monaco', 'Menlo', monospace;
             font-size: 13px;
-            color: #5a6c7d;
+            color: #cbd5e0;
             border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .tool-call:hover {
-            background: linear-gradient(to right, #e9ecef, #dee2e6);
+            background: linear-gradient(to right, #2d3748, #1a202c);
+            color: #f7fafc;
         }
-        
+
         .tool-results {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background: #1a202c;
+            border: 1px solid #4a5568;
             border-radius: 6px;
             margin: 8px 0;
         }
-        
+
         .tool-results.expanded {
             max-height: 500px;
             overflow-y: auto;
         }
-        
+
         .tool-results-content {
             padding: 12px;
             font-size: 14px;
             line-height: 1.5;
-            color: #495057;
+            color: #cbd5e0;
         }
 
         .message-group {
@@ -143,8 +148,8 @@
 
         .suggestions-container {
             padding: 20px 30px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
+            background: #2d3748;
+            border-top: 1px solid #4a5568;
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
@@ -152,7 +157,7 @@
 
         .suggestions-title {
             font-size: 12px;
-            color: #718096;
+            color: #a0aec0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
@@ -167,21 +172,21 @@
 
         .suggestion {
             padding: 8px 16px;
-            background: #f7f8fa;
-            border: 1px solid #e2e8f0;
+            background: #1a202c;
+            border: 1px solid #4a5568;
             border-radius: 20px;
             font-size: 14px;
-            color: #5a6c7d;
+            color: #cbd5e0;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
         }
 
         .suggestion:hover {
-            background: linear-gradient(135deg, #6b7c8a 0%, #8e9eab 100%);
-            color: white;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: #f7fafc;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 124, 138, 0.2);
+            box-shadow: 0 4px 12px rgba(74, 85, 104, 0.3);
         }
 
         .suggestion span {
@@ -191,47 +196,53 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #718096;
+            color: #a0aec0;
         }
 
         .empty-state h3 {
             font-size: 18px;
             margin-bottom: 10px;
-            color: #4a5568;
+            color: #e2e8f0;
         }
 
         .empty-state p {
             font-size: 14px;
             margin-bottom: 30px;
+            color: #cbd5e0;
         }
 
         .chat-input-container {
             padding: 25px 30px;
-            background: white;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: #2d3748;
+            border-top: 1px solid rgba(74, 85, 104, 0.3);
             display: flex;
             gap: 15px;
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
         }
 
         #messageInput {
             flex: 1;
             padding: 14px 20px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #4a5568;
             border-radius: 30px;
             font-size: 15px;
             transition: all 0.3s ease;
-            background: white;
+            background: #1a202c;
+            color: #e2e8f0;
         }
 
         #messageInput:focus {
             outline: none;
-            border-color: #8e9eab;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(142, 158, 171, 0.1);
+            border-color: #68d391;
+            background: #1a202c;
+            box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.2);
+        }
+
+        #messageInput::placeholder {
+            color: #a0aec0;
         }
 
         #sendButton {
@@ -454,11 +465,11 @@
             const toolPattern = /\[TOOL_START\](.*?)\[TOOL_START\]\n?(.*?)\n?\[TOOL_END\](.*?)\[TOOL_END\]/gs;
             let formatted = text;
             let toolCounter = 0;
-            
+
             formatted = formatted.replace(toolPattern, (match, startText, toolContent, endText) => {
                 const toolId = `tool-${Date.now()}-${toolCounter++}`;
                 const cleanContent = toolContent.trim();
-                
+
                 return `<span class="tool-call" onclick="toggleToolResults('${toolId}')">🔍 ${startText.trim()} (click to expand)</span>
                         <div class="tool-results" id="${toolId}">
                             <div class="tool-results-content">${cleanContent.replace(/\n/g, '<br>')}</div>
@@ -474,7 +485,7 @@
 
             return formatted;
         }
-        
+
         function toggleToolResults(toolId) {
             const element = document.getElementById(toolId);
             if (element) {

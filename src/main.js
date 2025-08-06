@@ -119,8 +119,7 @@ const retrieveTool = tool(
 );
 
 const checkpointer = new MemorySaver();
-const agent = createReactAgent({ llm: llm, tools: [retrieveTool], prompt: 'Task: aid the user', checkpointer });
-const config = { configurable: { thread_id: '1' } };
+const agent = createReactAgent({ llm: llm, tools: [retrieveTool], prompt: 'You are an CV search assistant, help the user with they`re queries', checkpointer });
 
 async function loadCVs(cvsDirectory) {
     const pdfFiles = fs.readdirSync(cvsDirectory).map(file => path.join(cvsDirectory, file));
@@ -162,35 +161,4 @@ function extractCandidateName(filename) {
     return filename.replace('_cv.pdf', '').split('_').join(' ');
 }
 
-async function chat() {
-    const stream1 = agent.streamEvents({ messages: ['who knows python?'] }, { ...config, version: 'v2' });
-    console.log('First response:');
-    for await (const event of stream1) {
-        if (event.event === 'on_chat_model_stream') {
-            process.stdout.write(event.data?.chunk?.content?.[0]?.text ?? '');
-        }
-
-        if (event.event === 'on_tool_start') {
-            console.log(event)
-        }
-        if (event.event === 'on_tool_end') {
-            console.log(event)
-        }
-    }
-    // console.log(stream1)
-
-    // const stream2 = agent.streamEvents({ messages: ['+ 5?'] }, { ...config, version: 'v2' });
-    // console.log('Second response:');
-    // for await (const event of stream2) {
-    //     if (event.event === 'on_chat_model_stream') {
-    //         process.stdout.write(event.data?.chunk?.content?.[0]?.text ?? '');
-    //     }
-    // }
-
-    // const history = await checkpointer.get(config.configurable);
-    // console.log('\n\n[CHAT HISTORY]:', JSON.stringify(history?.channel_values?.messages || [], null, 2));
-
-}
-
 loadCVs('./cvs')
-// chat() // Commented out - now using web interface
